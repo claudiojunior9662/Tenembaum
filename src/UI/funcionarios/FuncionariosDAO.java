@@ -42,12 +42,31 @@ public class FuncionariosDAO {
             stmt.setString(10, fBEAN.getEndereco());
             stmt.setString(11, fBEAN.getBairro());
             stmt.setString(12, fBEAN.getCep());
+            stmt.setString(13, fBEAN.getRua());
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException ex) {
             Logger.getLogger(FuncionariosDAO.class.getName()).log(Level.SEVERE, null, ex);
         }finally{
             ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
+    
+    public void createFuncionarioDisponibilidade(String matricula, String disponibilidade){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try{
+            stmt = con.prepareStatement("INSERT INTO funcionarios_disponibilidade VALUES(?,?)");
+            stmt.setString(1, matricula);
+            stmt.setString(2, disponibilidade);
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FuncionariosDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            ConnectionFactory.closeConnection(con, stmt, rs);
         }
     }
     
@@ -192,6 +211,31 @@ public class FuncionariosDAO {
                 aux.setBairro(rs.getString("bairro"));
                 aux.setCep(rs.getString("cep"));
                 aux.setRua(rs.getString("rua"));
+                retorno.add(aux);
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FuncionariosDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            ConnectionFactory.closeConnection(con, stmt, rs);
+        }
+        return retorno;
+    }
+    
+    public List<FuncionariosBEAN> retornaDisponibilidade(String matricula){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        List<FuncionariosBEAN> retorno = new ArrayList();
+        
+        try{
+            stmt = con.prepareStatement("SELECT horario_por_dia FROM funcionarios_disponibilidade WHERE matricula = ?");
+            stmt.setString(1, matricula);
+            rs = stmt.executeQuery();
+            while(rs.next()){
+                FuncionariosBEAN aux = new FuncionariosBEAN();
+                aux.setCargaHorariaSemanal(rs.getString("horario_por_dia"));
                 retorno.add(aux);
             }
             stmt.close();

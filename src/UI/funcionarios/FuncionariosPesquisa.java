@@ -208,8 +208,8 @@ public class FuncionariosPesquisa extends javax.swing.JFrame {
         //INSTANCIA AS CLASSES--------------------------------------------------
         FuncionariosDAO fDAO = new FuncionariosDAO();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        //REALIZA A PESQUISA----------------------------------------------------
-        String matricula = tabelaPesquisa.getValueAt(tabelaPesquisa.getSelectedRow(), 0).toString();
+        //REALIZA A PESQUISA DADOS PESSOAIS-------------------------------------
+       String matricula = tabelaPesquisa.getValueAt(tabelaPesquisa.getSelectedRow(), 0).toString();
         for(FuncionariosBEAN fBEAN : fDAO.preenchePesquisa(matricula)){
             FuncionariosCadastro.campoMatricula.setText(matricula);
             FuncionariosCadastro.campoNome.setText(fBEAN.getNome());
@@ -227,7 +227,55 @@ public class FuncionariosPesquisa extends javax.swing.JFrame {
             FuncionariosCadastro.campoBairro.setText(fBEAN.getBairro());
             FuncionariosCadastro.campoRua.setText(fBEAN.getRua());
             FuncionariosCadastro.campoCEP.setText(fBEAN.getCep());
+            FuncionariosCadastro.campoRg.setText(fBEAN.getRg());
         }
+        //REALIZA PESQUISA DADOS DE TRABALHO------------------------------------
+        String disponibilidade = null;
+        String aux = null;
+        for(FuncionariosBEAN fBEAN : fDAO.retornaDisponibilidade(matricula)){
+            disponibilidade = fBEAN.getCargaHorariaSemanal();
+            for(int i = 0; i < 7; i++){
+                if(disponibilidade.charAt(0) == '1'){
+                    aux = disponibilidade.substring(1, 12);
+                    FuncionariosCadastro.fb.setHorarioDomingo(aux);
+                    FuncionariosCadastro.domingo.setSelected(true);
+                }else if(disponibilidade.charAt(0) == '2'){
+                    aux = disponibilidade.substring(1,12);
+                    FuncionariosCadastro.fb.setHorarioSegunda(aux);
+                    FuncionariosCadastro.segunda.setSelected(true);
+                }else if(disponibilidade.charAt(0) == '3'){
+                    aux = disponibilidade.substring(1,12);
+                    FuncionariosCadastro.fb.setHorarioTerca(aux);
+                    FuncionariosCadastro.terca.setSelected(true);
+                }else if(disponibilidade.charAt(0) == '4'){
+                    aux = disponibilidade.substring(1,12);
+                    FuncionariosCadastro.fb.setHorarioQuarta(aux);
+                    FuncionariosCadastro.quarta.setSelected(true);
+                }else if(disponibilidade.charAt(0) == '5'){
+                    aux = disponibilidade.substring(1,12);
+                    FuncionariosCadastro.fb.setHorarioQuinta(aux);
+                    FuncionariosCadastro.quinta.setSelected(true);
+                }else if(disponibilidade.charAt(0) == '6'){
+                    aux = disponibilidade.substring(1,12);
+                    FuncionariosCadastro.fb.setHorarioSexta(aux);
+                    FuncionariosCadastro.sexta.setSelected(true);
+                }else if(disponibilidade.charAt(0) == '7'){
+                    aux = disponibilidade.substring(1,12);
+                    FuncionariosCadastro.fb.setHorarioSabado(aux);
+                    FuncionariosCadastro.sabado.setSelected(true);
+                }
+                if(disponibilidade.length() >= 11){
+                    if(disponibilidade.length() == 12){
+                        i = 7;
+                    }else{
+                       disponibilidade = disponibilidade.substring(13); 
+                    }
+                }
+            }
+        }
+        //PREENCHE OS DIAS------------------------------------------------------
+        FuncionariosCadastro.atualizaComboDia();
+        //FECHA A TELA E ATUALIZA OS STATUS-------------------------------------
         FuncionariosCadastro.estadoPosPesquisar();
         this.dispose();
     }//GEN-LAST:event_botaoSelecionarActionPerformed

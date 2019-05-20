@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
  * @author claudio
  */
 public class FuncionariosCadastro extends javax.swing.JFrame {
-    FuncionariosBEAN fb = new FuncionariosBEAN();
+    public static FuncionariosBEAN fb = new FuncionariosBEAN();
     
     public FuncionariosCadastro() {
         initComponents();
@@ -734,23 +734,60 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
         fBEAN.setCep(campoCEP.getText().replace(".", "").replace("-", "").replace(" ", ""));
         
         String horarioDefinitivo = null;
-        if(domingo.isSelected() == true){
-            horarioDefinitivo = horarioDefinitivo + "1" + fb.getHorarioDomingo();
-        }if(segunda.isSelected() == true){
-            horarioDefinitivo = horarioDefinitivo + "-" + "2" + fb.getHorarioSegunda();
-        }if(terca.isSelected() == true){
-            horarioDefinitivo = horarioDefinitivo + "-" + "3" + fb.getHorarioTerca();
-        }if(quarta.isSelected() == true){
-            horarioDefinitivo = horarioDefinitivo + "-" + "4" + fb.getHorarioQuarta();
-        }if(quinta.isSelected() == true){
-            horarioDefinitivo = horarioDefinitivo + "-" + "5" + fb.getHorarioQuinta();
-        }if(sexta.isSelected() == true){
-            horarioDefinitivo = horarioDefinitivo + "-" + "6" + fb.getHorarioSexta();
-        }if(sabado.isSelected() == true){
-            horarioDefinitivo = horarioDefinitivo + "-" + "7" + fb.getHorarioSabado();
-        }
+        for(int i = 0; i < 7; i ++){
+            if(fb.getDomingo() == 1){
+                horarioDefinitivo = horarioDefinitivo + "1" + fb.getHorarioDomingo();
+                fb.setDomingo(0);
+            }else if(horarioDefinitivo == null){
+                System.out.println("entrou aqui");
+                System.out.println(horarioDefinitivo);
+                System.out.println(fb.getSegunda());
+                if(fb.getSegunda() == 1){
+                    horarioDefinitivo =  "2" + fb.getHorarioSegunda();
+                    fb.setSegunda(0);
+                }else if(fb.getTerca() == 1){
+                    horarioDefinitivo =  "3" + fb.getHorarioTerca();
+                    fb.setTerca(0);
+                }else if(fb.getQuarta() == 1){
+                    horarioDefinitivo = "4" + fb.getHorarioQuarta();
+                    fb.setQuarta(0);
+                }else if(fb.getQuinta() == 1){
+                    horarioDefinitivo = "5" + fb.getHorarioQuinta();
+                    fb.setQuinta(0);
+                }else if(fb.getSexta() == 1){
+                    horarioDefinitivo = "6" + fb.getHorarioSexta();
+                    fb.setSexta(0);
+                }else if(fb.getSabado() == 1){
+                    horarioDefinitivo = "7" + fb.getHorarioSabado();
+                    fb.setSabado(0);
+                }
+            }else{
+                System.out.println("entrou aqui sem null");
+                System.out.println(horarioDefinitivo);
+                if(fb.getSegunda() == 1){
+                    horarioDefinitivo = horarioDefinitivo + "-" + "2" + fb.getHorarioSegunda();
+                    fb.setSegunda(0);
+                }else if(fb.getTerca() == 1){
+                    horarioDefinitivo = horarioDefinitivo + "-" + "3" + fb.getHorarioTerca();
+                    fb.setTerca(0);
+                }else if(fb.getQuarta() == 1){
+                    horarioDefinitivo = horarioDefinitivo + "-" + "4" + fb.getHorarioQuarta();
+                    fb.setQuarta(0);
+                }else if(fb.getQuinta() == 1){
+                    horarioDefinitivo = horarioDefinitivo + "-" + "5" + fb.getHorarioQuinta();
+                    fb.setQuinta(0);
+                }else if(fb.getSexta() == 1){
+                    horarioDefinitivo = horarioDefinitivo + "-" + "6" + fb.getHorarioSexta();
+                    fb.setSexta(0);
+                }else if(fb.getSabado() == 1){
+                    horarioDefinitivo = horarioDefinitivo + "-" + "7" + fb.getHorarioSabado();
+                    fb.setSabado(0);
+                }
+            }
+        }        
         //SALVA NO BANCO DE DADOS-----------------------------------------------
         fDAO.createFuncionario(fBEAN);
+        fDAO.createFuncionarioDisponibilidade(fBEAN.getMatricula(), horarioDefinitivo);
         //EXIBE MENSAGEM DE CONFIRMAÇÃO-----------------------------------------
         JOptionPane.showMessageDialog(null, "A matrícula " + campoMatricula.getText() + " foi adicionada com sucesso.");
         //VOLTA AO ESTADO INICIAL-----------------------------------------------
@@ -1017,7 +1054,7 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
     public static javax.swing.JTextField campoEndereco;
     public static javax.swing.JFormattedTextField campoMatricula;
     public static javax.swing.JTextField campoNome;
-    private javax.swing.JFormattedTextField campoRg;
+    public static javax.swing.JFormattedTextField campoRg;
     public static javax.swing.JTextField campoRua;
     public static javax.swing.JPasswordField campoSenha;
     public static javax.swing.JComboBox comboDia;
@@ -1313,7 +1350,7 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
         horarioSaida.setEnabled(false);
     }
     
-    public void atualizaComboDia(){
+    public static void atualizaComboDia(){
         comboDia.removeAllItems();
         comboDia.addItem("Selecione...");
         if(fb.getSegunda() == 1){comboDia.addItem("Segunda");}
