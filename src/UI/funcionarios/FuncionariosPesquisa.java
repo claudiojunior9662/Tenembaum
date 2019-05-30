@@ -230,6 +230,7 @@ public class FuncionariosPesquisa extends javax.swing.JFrame {
             FuncionariosCadastro.campoRg.setText(fBEAN.getRg());
         }
         //REALIZA PESQUISA DADOS DE TRABALHO------------------------------------
+        limpaSelecao();
         String disponibilidade = null;
         String aux = null;
         for(FuncionariosBEAN fBEAN : fDAO.retornaDisponibilidade(matricula)){
@@ -342,4 +343,15 @@ public class FuncionariosPesquisa extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabelaPesquisa;
     // End of variables declaration//GEN-END:variables
+
+    public void limpaSelecao(){
+        FuncionariosCadastro.segunda.setSelected(false);
+        FuncionariosCadastro.terca.setSelected(false);
+        FuncionariosCadastro.quarta.setSelected(false);
+        FuncionariosCadastro.quinta.setSelected(false);
+        FuncionariosCadastro.sexta.setSelected(false);
+        FuncionariosCadastro.sabado.setSelected(false);
+        FuncionariosCadastro.domingo.setSelected(false);
+        
+    }
 }

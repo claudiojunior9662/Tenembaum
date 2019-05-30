@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
  */
 public class FuncionariosCadastro extends javax.swing.JFrame {
     public static FuncionariosBEAN fb = new FuncionariosBEAN();
+    public boolean editar = false;
     
     public FuncionariosCadastro() {
         initComponents();
@@ -572,6 +573,7 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
 
     private void botaoEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEditarActionPerformed
         estadoEditar();
+        editar = true;
     }//GEN-LAST:event_botaoEditarActionPerformed
 
     private void botaoExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExcluirActionPerformed
@@ -583,6 +585,7 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
     }//GEN-LAST:event_botaoCancelarActionPerformed
 
     private void botaoSalvarAlteracoesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoSalvarAlteracoesActionPerformed
+        System.out.println(editar);
         //INSTANCIAR AS FUNÇÕES NECESSÁRIAS-------------------------------------
         FuncionariosDAO fDAO = new FuncionariosDAO();
         FuncionariosBEAN fBEAN = new FuncionariosBEAN();
@@ -704,18 +707,20 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
             }
         }
         //VERIFICA REPETIÇÃO DE DADOS-------------------------------------------
-        for(FuncionariosBEAN aux : fDAO.verificaRepeticao()){
-            if(aux.getMatricula().equals(campoMatricula.getText().replace(" ", ""))){
-                JOptionPane.showMessageDialog(null, "A matrícula digitada já existe.");
-                return;
-            }
-            if(aux.getCpf().equals(campoCpf.getText().replace(".", "").replace("-", "").replace(" ", ""))){
-                JOptionPane.showMessageDialog(null, "O CPF digitado já existe.");
-                return;
-            }
-            if(aux.getRg().equals(campoRg.getText().replace(".", "").replace("-", "").replace(" ", ""))){
-                JOptionPane.showMessageDialog(null, "O RG digitado já existe");
-                return;
+        if(editar == false){
+            for(FuncionariosBEAN aux : fDAO.verificaRepeticao()){
+                if(aux.getMatricula().equals(campoMatricula.getText().replace(" ", ""))){
+                    JOptionPane.showMessageDialog(null, "A matrícula digitada já existe.");
+                    return;
+                }
+                if(aux.getCpf().equals(campoCpf.getText().replace(".", "").replace("-", "").replace(" ", ""))){
+                    JOptionPane.showMessageDialog(null, "O CPF digitado já existe.");
+                    return;
+                }
+                if(aux.getRg().equals(campoRg.getText().replace(".", "").replace("-", "").replace(" ", ""))){
+                    JOptionPane.showMessageDialog(null, "O RG digitado já existe");
+                    return;
+                }
             }
         }
         //PREENCHE BEAN---------------------------------------------------------
@@ -732,16 +737,13 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
         fBEAN.setBairro(campoBairro.getText());
         fBEAN.setRua(campoRua.getText());
         fBEAN.setCep(campoCEP.getText().replace(".", "").replace("-", "").replace(" ", ""));
-        
+        //DEFINE A STRING PARA SER ARMAZENADA NO BANCO--------------------------
         String horarioDefinitivo = null;
         for(int i = 0; i < 7; i ++){
             if(fb.getDomingo() == 1){
                 horarioDefinitivo = horarioDefinitivo + "1" + fb.getHorarioDomingo();
                 fb.setDomingo(0);
             }else if(horarioDefinitivo == null){
-                System.out.println("entrou aqui");
-                System.out.println(horarioDefinitivo);
-                System.out.println(fb.getSegunda());
                 if(fb.getSegunda() == 1){
                     horarioDefinitivo =  "2" + fb.getHorarioSegunda();
                     fb.setSegunda(0);
@@ -762,8 +764,6 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
                     fb.setSabado(0);
                 }
             }else{
-                System.out.println("entrou aqui sem null");
-                System.out.println(horarioDefinitivo);
                 if(fb.getSegunda() == 1){
                     horarioDefinitivo = horarioDefinitivo + "-" + "2" + fb.getHorarioSegunda();
                     fb.setSegunda(0);
@@ -786,8 +786,14 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
             }
         }        
         //SALVA NO BANCO DE DADOS-----------------------------------------------
-        fDAO.createFuncionario(fBEAN);
-        fDAO.createFuncionarioDisponibilidade(fBEAN.getMatricula(), horarioDefinitivo);
+        if(editar == false){
+            fDAO.createFuncionario(fBEAN);
+            fDAO.createFuncionarioDisponibilidade(fBEAN.getMatricula(), horarioDefinitivo);
+        }else{
+            fb.setCargaHorariaSemanal(horarioDefinitivo);
+            fDAO.atualizaRegistroFuncionario(fb, fb.getMatricula());
+            fDAO.atualizaRegistroDisponibilidade(fb, fb.getMatricula());
+        }
         //EXIBE MENSAGEM DE CONFIRMAÇÃO-----------------------------------------
         JOptionPane.showMessageDialog(null, "A matrícula " + campoMatricula.getText() + " foi adicionada com sucesso.");
         //VOLTA AO ESTADO INICIAL-----------------------------------------------
@@ -1212,7 +1218,7 @@ public class FuncionariosCadastro extends javax.swing.JFrame {
         botaoSalvarAlteracoes.setEnabled(true);
         botaoCancelar.setEnabled(true);
         
-        campoMatricula.setEditable(true);
+        campoMatricula.setEditable(false);
         campoNome.setEditable(true);
         campoCpf.setEditable(true);
         campoDataNascimento.setEnabled(true);

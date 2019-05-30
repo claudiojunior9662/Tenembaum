@@ -246,4 +246,84 @@ public class FuncionariosDAO {
         }
         return retorno;
     }
+    
+    public void atualizaRegistroFuncionario(FuncionariosBEAN bean, String matricula){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        
+        try{
+            stmt = con.prepareStatement("UPDATE funcionarios SET nome = ?, cpf = ?, data_nascimento = ?, data_admissao = ?,"
+                                        + "setor = ?, cargo = ?, senha = ?, rg = ?, endereco = ?, bairro = ?, cep = ?,"
+                                        + "rua = ? WHERE matricula = ?");
+            stmt.setString(1, bean.getNome());
+            stmt.setString(2, bean.getCpf());
+            stmt.setString(3, bean.getDataNascimento());
+            stmt.setString(4, bean.getDataAdmissao());
+            stmt.setString(5, bean.getSetor());
+            stmt.setString(6, bean.getCargo());
+            stmt.setString(7, bean.getSenha());
+            stmt.setString(8, bean.getRg());
+            stmt.setString(9, bean.getEndereco());
+            stmt.setString(10, bean.getBairro());
+            stmt.setString(11, bean.getCep());
+            stmt.setString(12, bean.getRua());
+            stmt.setString(13, matricula);
+            stmt.executeUpdate();
+            stmt.close();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(FuncionariosDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
+    
+    public void atualizaRegistroDisponibilidade(FuncionariosBEAN bean, String matricula){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        
+        try{
+            stmt = con.prepareStatement("UPDATE funcionarios_disponibilidade SET horario_por_dia = ? WHERE matricula = ?");
+            stmt.setString(1, bean.getCargaHorariaSemanal());
+            stmt.setString(2, matricula);
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FuncionariosDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
+    
+    public void excluiDisponibilidade(String matricula){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        
+        try{
+            stmt = con.prepareStatement("DELETE FROM funcionarios_disponibilidade WHERE matricula = ?");
+            stmt.setString(1, matricula);
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FuncionariosDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
+    
+    public void excluiFuncionario(String matricula){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        
+        try{
+            stmt = con.prepareStatement("DELETE FROM funcionarios WHERE matricula = ?");
+            stmt.setString(1, matricula);
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FuncionariosDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
 }
